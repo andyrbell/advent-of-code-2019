@@ -7,23 +7,20 @@ fn never_decreases(password: &Vec<i32>) -> bool {
 }
 
 fn contains_double(password: &Vec<i32>) -> bool {
-    password[1] == password[0] ||
-    password[2] == password[1] ||
-    password[3] == password[2] ||
-    password[4] == password[3] ||
-    password[5] == password[4]
+    password.iter()
+        .tuple_windows()
+        .any(|(a,b)| a == b)
 }
 
 fn contains_exclusive_double(password: &Vec<i32>) -> bool {
-    match password.as_slice() {
-        [a,b,c,_,_,_] if a == b && b != c => true,
-        [a,b,c,d,_,_] if a != b && b == c && c != d => true,
-        [_,a,b,c,d,_] if a != b && b == c && c != d => true,
-        [_,_,a,b,c,d] if a != b && b == c && c != d => true,
-        [_,_,_,a,b,c] if a != b && b == c => true,
-        _ => false
-    }
+    password.iter()
+        .map(|digit| digit.to_string())
+        .group_by(|digit| digit.clone())
+        .into_iter()
+        .map(|(_, digit_group)| digit_group.count())
+        .any(|group_size| group_size == 2)
 }
+
 fn to_digits(n: i32) -> Vec<i32> {
     n.to_string().chars()
         .map(|c| c.to_digit(10).unwrap() as i32)
